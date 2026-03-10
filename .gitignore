@@ -1,0 +1,7 @@
+obj/
+testobj/
+bin/
+testbin/
+*.o
+*.a
+htmlcov/
