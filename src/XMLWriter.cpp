@@ -9,6 +9,8 @@ static std::string EscapeText(const std::string &s) {
         if (c == '&') out += "&amp;";
         else if (c == '<') out += "&lt;";
         else if (c == '>') out += "&gt;";
+        else if (c == '"') out += "&quot;";
+        else if (c == '\'') out += "&apos;";
         else out += c;
     }
     return out;

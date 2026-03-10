@@ -57,15 +57,6 @@ struct CXMLReader::SImplementation {
         // Flush any pending char data before ending an element
         impl->FlushCharDataToQueue();
 
-        // Checking if the last entity was a start element with the same name
-        if (!impl->DQueue.empty()) {
-            const SXMLEntity &last = impl->DQueue.back();
-            if (last.DType == SXMLEntity::EType::StartElement && last.DNameData == name) {
-                impl->DQueue.back().DType = SXMLEntity::EType::CompleteElement; 
-                return;
-            }
-        }
-
         SXMLEntity ent;
         ent.DType = SXMLEntity::EType::EndElement;
         ent.DNameData = name;

@@ -4,6 +4,7 @@ struct CDSVWriter::SImplementation {
     std::shared_ptr<CDataSink> DSink;
     char DDelimiter;
     bool DQuoteAll;
+    bool DFirstRow = true;
 };
 
 CDSVWriter::CDSVWriter(std::shared_ptr<CDataSink> sink, char delimiter, bool quoteall)
@@ -17,6 +18,10 @@ CDSVWriter::CDSVWriter(std::shared_ptr<CDataSink> sink, char delimiter, bool quo
 CDSVWriter::~CDSVWriter() = default;
 
 bool CDSVWriter::WriteRow(const std::vector<std::string> &row) {
+    if(!DImplementation->DFirstRow){
+        DImplementation->DSink->Put('\n');
+    }
+    DImplementation->DFirstRow = false;
     for(size_t i = 0; i < row.size(); i++){
         const std::string &field = row[i];
         // need to quote if field has special chars or quoteall is set
@@ -44,6 +49,5 @@ bool CDSVWriter::WriteRow(const std::vector<std::string> &row) {
             DImplementation->DSink->Put(DImplementation->DDelimiter);
         }
     }
-    DImplementation->DSink->Put('\n');
     return true;
 }

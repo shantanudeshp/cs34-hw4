@@ -9,14 +9,14 @@ struct COpenStreetMap::SImplementation {
 
     struct SNodeImpl : public CStreetMap::SNode {
         TNodeID DID = CStreetMap::InvalidNodeID;
-        TLocation DLocation{0.0, 0.0};
+        SLocation DLocation{0.0, 0.0};
 
         // Preserve insertion order for keys, but allow fast lookup.
         std::vector<TAttribute> DAttributes;
         std::unordered_map<std::string, std::string> DAttributeByKey;
 
         TNodeID ID() const noexcept override { return DID; }
-        TLocation Location() const noexcept override { return DLocation; }
+        SLocation Location() const noexcept override { return DLocation; }
 
         std::size_t AttributeCount() const noexcept override { return DAttributes.size(); }
 
@@ -140,12 +140,16 @@ COpenStreetMap::COpenStreetMap(std::shared_ptr<CXMLReader> src)
             auto Node = std::make_shared<SImplementation::SNodeImpl>();
 
             if(Ent.AttributeExists("id")){
-                Node->DID = std::stoull(Ent.AttributeValue("id"));
+                try{ Node->DID = std::stoull(Ent.AttributeValue("id")); }
+                catch(...){ Node->DID = CStreetMap::InvalidNodeID; }
             }
             if(Ent.AttributeExists("lat") && Ent.AttributeExists("lon")){
-                double Lat = std::stod(Ent.AttributeValue("lat"));
-                double Lon = std::stod(Ent.AttributeValue("lon"));
-                Node->DLocation = std::make_pair(Lat, Lon);
+                try{
+                    double Lat = std::stod(Ent.AttributeValue("lat"));
+                    double Lon = std::stod(Ent.AttributeValue("lon"));
+                    Node->DLocation = CStreetMap::SLocation(Lat, Lon);
+                }
+                catch(...){}
             }
 
             // Non-self-closing nodes can have <tag .../> children.
@@ -183,7 +187,8 @@ COpenStreetMap::COpenStreetMap(std::shared_ptr<CXMLReader> src)
             auto Way = std::make_shared<SImplementation::SWayImpl>();
 
             if(Ent.AttributeExists("id")){
-                Way->DID = std::stoull(Ent.AttributeValue("id"));
+                try{ Way->DID = std::stoull(Ent.AttributeValue("id")); }
+                catch(...){ Way->DID = CStreetMap::InvalidWayID; }
             }
 
             // Non-self-closing ways can have <nd ref="..."/> and <tag .../> children.
@@ -223,10 +228,10 @@ COpenStreetMap::COpenStreetMap(std::shared_ptr<CXMLReader> src)
                 }
             }
 
-            if(Way->DID != CStreetMap::InvalidWayID){
+            if(Way->DID != CStreetMap::InvalidWayID && DImplementation->DWayByID.find(Way->DID) == DImplementation->DWayByID.end()){
                 DImplementation->DWayByID[Way->DID] = DImplementation->DWays.size();
+                DImplementation->DWays.push_back(Way);
             }
-            DImplementation->DWays.push_back(Way);
         }
     }
 }
