@@ -86,16 +86,16 @@ testbin/testtp: obj/DijkstraTransportationPlanner.o obj/DijkstraPathRouter.o obj
 	$(CXX) $^ $(LDFLAGS) -lexpat -o $@
 
 testbin/testtpcl: obj/TransportationPlannerCommandLine.o obj/StringDataSource.o obj/StringDataSink.o \
-	obj/DSVWriter.o testobj/TPCommandLineTest.o
+	obj/DSVWriter.o obj/GeographicUtils.o testobj/TPCommandLineTest.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-bin/transplanner: obj/DijkstraTransportationPlanner.o obj/DijkstraPathRouter.o obj/BusSystemIndexer.o \
+bin/transplanner: obj/transplanner.o obj/DijkstraTransportationPlanner.o obj/DijkstraPathRouter.o obj/BusSystemIndexer.o \
 	obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystem.o obj/DSVReader.o obj/DSVWriter.o \
-	obj/StringDataSource.o obj/StringDataSink.o obj/GeographicUtils.o \
+	obj/StringDataSource.o obj/StringDataSink.o obj/StringUtils.o obj/GeographicUtils.o \
 	obj/FileDataSource.o obj/FileDataSink.o obj/FileDataFactory.o \
 	obj/StandardDataSource.o obj/StandardDataSink.o obj/StandardErrorDataSink.o \
 	obj/TransportationPlannerCommandLine.o obj/KMLWriter.o obj/XMLWriter.o
-	$(CXX) $^ $(LDFLAGS) -lexpat -o $@
+	$(CXX) $^ -lexpat -o $@
 
 bin/speedtest: obj/DijkstraTransportationPlanner.o obj/DijkstraPathRouter.o obj/BusSystemIndexer.o \
 	obj/OpenStreetMap.o obj/XMLReader.o obj/CSVBusSystem.o obj/DSVReader.o \
