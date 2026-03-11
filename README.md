@@ -1,6 +1,6 @@
 # Project 4 - Dijkstra Transportation Planner
 
-Student: Shantanu (921200468)
+Student: Shantanu (921200468), Ryan Duong (921278843)
 
 ## Overview
 
@@ -219,5 +219,50 @@ make clean  # removes all build artifacts
 **Changes Made:** Wrapped the way insertion block in the combined conditional. Removed the separate `if(Way->DID != InvalidWayID)` map-only check that previously allowed duplicate ways into the vector.
 
 **Rationale:** The map lookup is O(1) and the deduplication keeps the data structure consistent — the vector index stored in the map only makes sense if each way appears exactly once in the vector.
+
+---
+
+### 16. Tracking Visited Vertices
+
+**Prompt:** "Do I need a visited set when implementing Dijkstra’s algorithm?"
+
+**Original AI Response:**
+"Yes, it is common to keep a structure that tracks which vertices have already been finalized. When a vertex is removed from the priority queue with the smallest tentative distance, that distance is guaranteed to be the shortest possible for that vertex. At that point the vertex can be marked as visited so it is not processed again. This avoids unnecessary work and ensures that each vertex is finalized only once."
+
+**Changes Made:** 
+Used a structure to track which vertices had already been processed during the algorithm.
+
+**Rationale:** 
+Tracking visited vertices prevents unnecessary reprocessing and ensures the algorithm follows the standard behavior of finalizing the shortest distance for each vertex once.
+
+---
+
+### 17. Storing Distances
+
+**Prompt:** "What is a good way to store the distance values for each vertex?"
+
+**Original AI Response:**
+"You should maintain a container that maps each vertex to its current best-known distance from the source. In C++, this is often done using a map or unordered_map keyed by the vertex ID. Initially, all vertices are assigned a very large value representing infinity, except the source which is set to zero. Whenever the algorithm discovers a shorter path to a vertex, the stored distance should be updated."
+
+**Changes Made:** 
+Maintained a data structure that tracked the current shortest distance for each vertex during the algorithm.
+
+**Rationale:**
+ Dijkstra’s algorithm relies on comparing tentative distances and updating them when shorter paths are found, so storing these values is necessary for the algorithm to function correctly.
+
+---
+
+### 18. Mising Dependencies
+
+**Prompt:** I keep getting the return error of "[Makefile:90: testbin/testtpcl] Error 1" (copied entire terminal message)
+
+**Original AI Response:**
+I identified that obj/GeographicUtils.o was missing from the testbin/testtpcl link rule, causing an undefined reference to SGeographicUtils::ConvertLLToDMS at link time. Add obj/GeographicUtils.o to the list of object files in that rule.
+
+**Changes Made:** 
+Added obj/GeographicUtils.o to the testbin/testtpcl rule in the Makefile so that the geographic utilities object file is included when linking the command-line test binary.
+
+**Rationale:** 
+The TransportationPlannerCommandLine implementation calls SGeographicUtils::ConvertLLToDMS to format node coordinates. Without linking GeographicUtils.o, the linker cannot resolve that symbol, causing a build failure even though the source code itself is correct.
 
 ---
